@@ -22,4 +22,18 @@ jobs:
         with:
           push: true
           tags: ankisile/hostservice:${{ github.sha }}
-          
+  updateYaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: 'ankisile/hostsvc-cd'
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 2. Change Docker tag
+        run: |
+          sed "s/image: ankisile\/node-app:.*/images: ankisile\/node-app:${{ github.sha }}/g"
+          git config --global user.email "ankisile@gmail.com"
+          git config --global user.name "ankisile"
+          git commit -am "triggered by github action"
+          git push origin "main"
